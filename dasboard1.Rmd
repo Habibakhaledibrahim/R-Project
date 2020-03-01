@@ -1,0 +1,126 @@
+---
+title: "Untitled"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+
+library(flexdashboard)
+library(tidyverse)
+library(plotly)
+library(readr)
+library(ggplot2)
+library(ggthemes)
+library(extrafont)
+library(plyr)
+library(scales)
+library("readxl")
+
+dataset<-read_excel("smallDATA.xlsx",col_names=TRUE)
+glimpse(dataset)
+
+```
+
+Sector with Town
+=======================================================================
+
+Row {data-height=650}
+-------------------------------------
+### Chart 1
+
+```{r}
+
+  dataset %>% 
+  ggplot(aes(x=SectorName ))+
+  geom_bar(aes(fill = SectorName)) -> graphe1
+  ggplotly(graphe1)
+  
+```
+
+Row {data-height=350}
+-------------------------------------
+
+### Chart 2
+
+```{r}
+
+
+
+
+  dataset %>% 
+  ggplot(aes(x=SectorName))+
+  geom_bar(aes(fill = TownName) , position = "dodge")  ->graph2  ##most complains in each town 
+  plotly::ggplotly(graph2)
+
+```   
+
+### Chart 3
+
+```{r}
+
+  dataset %>% 
+  filter(TownID == 83 | TownID == 323) %>% 
+  ggplot(aes(x=ComplainTypeName ) )+
+  geom_bar(aes(fill = TownName) , position = "dodge")+
+  coord_flip() -> graph3
+  plotly::ggplotly(graph3) ##most complain type 
+
+  
+```
+    
+time_series
+=======================================================================
+Column 
+-------------------------------------
+    
+### Chart 1 complains per Month for  each Location 
+    
+```{r}
+
+     dataset%>% 
+     ggplot(aes())+
+     geom_bar(aes(x=Month,y = percentage,fill = LocationName),position = 'dodge')+
+     geom_text(aes(x=Month,y = percentage,label = paste0(percentage,"%")), size=4)->graphe3
+     plotly::ggplotly(graphe3) 
+
+```
+   
+Column {.tabset}
+-------------------------------------
+   
+### Chart 2 complaines per year for each sector 
+
+```{r}
+                    dataset %>% 
+                    ggplot(aes(year))+
+                    geom_bar(aes(fill =SectorName , position = "fill"))  -> graphe4
+                    plotly::ggplotly(graphe4) 
+
+```   
+ 
+### Chart 3 complaines per year for each town 
+    
+```{r}
+
+                    dataset %>% 
+                    ggplot(aes(year))+
+                    geom_bar(aes(fill =TownName , position = "dodge")) -> graphe5
+                    plotly::ggplotly(graphe5) 
+
+
+```
+
+
+
+
+question_two
+=======================================================================
+### put here you question
+
+
+question_three
+=======================================================================
+### put here your question

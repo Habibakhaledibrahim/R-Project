@@ -1,0 +1,70 @@
+---
+title: "Flights Dashboard"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(tidyverse)
+library(tidyr)
+library(plotly)
+library("readxl")
+library(nycflights13)
+
+dataset<-read_excel("smallDATA.xlsx",col_names=TRUE)
+
+```
+
+
+Column {.sidebar}
+-----------------------------------------------------------------------
+
+### Choose your route
+
+```{r}
+
+selectInput("SectorName", "Choose SectorName:", unique(dataset$SectorName))
+
+selectInput("TownName", "Choose TownName:", unique(dataset$TownName))
+
+
+```
+
+
+Column {data-width=650}
+-----------------------------------------------------------------------
+
+### Chart A
+
+```{r}
+
+charts.data <- ddply(charts.data, .(year),
+                     transform, pos = cumsum(percentage) - (0.5 * percentage))
+
+p4 <- ggplot() + geom_bar(aes(y = percentage, x = year, fill = product), data = charts.data,
+                           stat="identity")
+p4 <- p4 + geom_text(data=charts.data, aes(x = year, y = pos, label = paste0(percentage,"%")),
+                       size=4)
+p4
+
+renderPlot({
+dataset %>%
+  group_by(year,SectorName)%>%
+  dplyr::summarise(count1 = n())%>%
+  ggplot(aes(x = year,y=count1))+
+  geom_col(aes(fill=SectorName))+
+  geom_text(aes(label = paste0(round(count1/sum(count1)*100,1),'%')), position = position_stack(vjust = 0.5))+
+  theme(legend.position="right", legend.direction="vertical",
+                   legend.title = element_blank())
+})
+
+```
+
+
+
+
+
